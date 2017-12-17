@@ -2,7 +2,7 @@
 
 With the recent breakthroughs in deep learning and related technologies, the performance of Machine Learning (ML) algorithms has significantly improved. While typically thought of a technology that can only be applied to server technologies, machine learning technology can run on device as well. Developing a machine learning model usually involves two stages: training and inference. In the first stage, the developer decides on a skeleton model and feed large dataset to the model in repeated iterations to *train* the model. Then the model would then be ported to production environment to infer insights based on real time incoming data. While training is typically performed on the cloud, Inference can occur in the cloud or on the device. Performing inference on the device has a number of appealing properties, such as performance boost due to [edge computing](https://en.wikipedia.org/wiki/Edge_computing), resistance toward poor or no network, and security/privacy protection, etc. 
 
-Although platforms for native applications have all shipped APIs to support machine learning inference on device, similiar functionalities have been missing on the web platform. Supporting such functionalities can not only supercharge existing applications but also unlock new scenarios. For example, with the help of service worker, developers can have their text translation application to be available offline. By inferring the user’s emotions based on user’s input (be it text, image, or video), developers can build a rich emotional experience. Applications on new frontiers such as Mixed Reaility can become much "smarter."
+Although platforms for native applications have all shipped APIs to support machine learning inference on device, similiar functionality has been missing on the web platform. Supporting it can not only supercharge existing applications but also unlock new scenarios (see [use cases](#use-cases)). For example, with the help of service worker, developers can have their text translation application to be available offline. By inferring the user’s emotions based on user’s input (be it text, image, or video), developers can build a rich emotional experience. Applications on new frontiers such as Mixed Reaility can become much "smarter."
 
 Developers have also shown strong interests in the method of deploying machine learning models in web applications as evidenced by the growing number of machine learning libraries that can run in browsers. See [here](https://github.com/AngeloKai/js-ml-libraries) for a short list of the libraries or frameworks. [Synaptic.js](http://caza.la/synaptic/#/) and [webdnn](https://mil-tokyo.github.io/webdnn/) are probably most impressive ones in the list. 
 
@@ -39,3 +39,25 @@ A web application may wish to build "smarter" user interaction models. For examp
 ### Mixed Reality Experience 
 A web application built for mixed reality platforms may wish to leverage machine learning to anticipate user intention and provide assistance as needed. For example, when a worker is learning how to operate a new machine, the application could show how to operate each component as the worker gazes at each component. To do so, the app developer will need a objection detection model that is tuned to detect the components because they aren't included in typical image detection databases like [ImageNet](http://www.image-net.org/).  
 
+## Native Platform Support 
+
+### APIs
+As described above, native platforms have supported machine learning through linear algebras libraries and all recently shipped neural network APIs. iOS and MacOS shipped Basic Neural Network Subroutines (BNNS) and updated Accelerate Framework for Core ML. The Universal Windows Platform (UWP) has added support for CNTK. Android is also said to release a Deep Neural Network API soon.
+
+Unlike native platforms, web platforms do have its own unique challenges. First of all, many machine learning models can have a big file size. Although Service Worker has really helped close the gap for offline support, storing big file size can still be a challenge. Second, an app with machine learning functionalities can be published to only certain devices that match the performance requirement. The web platform cannot do that and developer will have to figure out a graceful fallback. The platform may have to provide some sort of device capability detection mechanism. 
+
+### Frameworks 
+
+Platform and developers have also built extensive frameworks on top of these APIs for mobile scenarios. Examples include Facebook’s [PyTorch](http://pytorch.org/) and Caffe2go, Google’s TensorFlow Lite, Apple’s CoreML Framework, and CNTK’s support for UWP.
+
+We include frameworks because of two reasons: 1) unlike traditional programming, machine learning development place significant emphasis on the training phase. The final API should make it easy to port the trained models. 2) These frameworks usually are the first one adopting the APIs. 
+
+## Challenges
+
+File size, memory, performance, and power consumption. And we need something to detect device capability.  
+
+## Existing Standards 
+
+With those challenges, we look at what standards are available today: 
+
+## Appendix: Related Research 
