@@ -12,4 +12,30 @@ However, because of a lack of comprehensive look at how to best support machine 
 
 P.S. The explainer is just a mean to help spark conversations around ML on the Web. Please feel free to submit PRs to correct me or add additional points. 
  
+## Use Cases
+Despite the long history of machine learning research and applications, I think it is safe to say we are still uncovering the countless applications ML. Below illustrate some example use cases developers may use machine learning in front-end applications. The sample use cases are based on inspirations from existing demos and production sites/apps. A common theme to draw from the use cases is that ML on the Web will not only supercharge existing functionalities but also unlock new scenarios. 
+
+### Offline Recommendation Engine
+A web application built with Service Work to be network resistant may wish to build its recommendation engine offline. For example, a site serving images/GIFs/video as content may wish to serve users smart content feed with content cached with Service Worker. Or a productivity application with many different features like Office may want to provide Help when the user is looking to know which feature they should use. 
+
+### Text Translation 
+A web application may wish to translate text from one language to another offline to be network resilient. For example, the Google Translate service trained a neural network to translate between languages and ported the network to its mobile app. The mobile app can be used offline, though translation may be better online. 
+
+### Object Detection from Images/Videos
+A web application may wish to detect objects from images or videos. For example, Baidu built convolutional neural networks (CNNs) into its mobile app so that the app can detect the primary object in the live camera feed and search related merchandise based on the result (Baidu deep learning framework).
+
+The problem of object detection involves two main sub-problems: localization and classification. The former refers to the problem of finding the location of the primary object in an image. The latter refers to the problem of classifying which category an image belongs. Solving the two problems together let us detect what kind of objects are in an image. 
+
+In addition to generic object detection, a developer may also want to tweak his/her specific object detection to hone in on certain areas. For example, an application may wish to train their model to focus on a few classes of objects for the sake of more accurate detection. For example, an application may want to automatically detect the user's credit card number with live camera feed. Here the developer only wants a model trained with credit card images. There are other examples. Web application for streaming/uploading videos may wish to perform live check of the camera feed to ensure the user isn’t showing obscene content for law compliance purpose. Or a web application may allow users to diagnose whether they likely have skin cancers themselves with live camera feed (Esteve et al., 2017).
+
+An application may also wish to let the front-end code only to identify the primary objects in an image and leave the task of classification to the back-end. Object detection roughly includes two sub-tasks: localization and classification. The former refers to the task of finding the pixel mask of the primary object in an image. The latter refers to the task of classifying which category an image belongs. The latter typically includes a much larger program while the former should usually be small enough to fit in client-side code. For example, in the above skin cancer recognition example, the application may want to let the front-end code to identify the mole and leave the task of classifying what kind of skin cancer the mole indicates to the back-end.
+
+### Risk Analysis 
+A web application may wish to deploy a small-scale risk analysis model to determine whether the transaction should be pre-approved and leave the final decision to the full-scale risk models on the backend. Quick pre-approval improves user experience while reducing cost for running the model.
+
+### Rich Interactive Experience
+A web application may wish to build "smarter" user interaction models. For example, the application can guess the user’s emotion based on user input and proactively make recommendations. For example, a social media site may wish to detect user’s emotion when user’s typing the post and recommend the right emoji to use. If the user wishes to post picture alongside the post, the application can also recommend appropriately based on the post.
+
+### Mixed Reality Experience 
+A web application built for mixed reality platforms may wish to leverage machine learning to anticipate user intention and provide assistance as needed. For example, when a worker is learning how to operate a new machine, the application could show how to operate each component as the worker gazes at each component. To do so, the app developer will need a objection detection model that is tuned to detect the components because they aren't included in typical image detection databases like [ImageNet](http://www.image-net.org/).  
 
