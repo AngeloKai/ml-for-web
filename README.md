@@ -70,7 +70,16 @@ address the pain but none of them is a complete solution:
 
 1. __WebAssembly.__
 
-
+    WebAssembly addresses the developer pain of porting binary package of trained machine learning
+    models to the web platform. However, today it only compiles down to CPU instructions but not 
+    GPU level not to mention other chips. GPU acceleration is the main performance driver today. 
+    Assuming WebAssembly does compile down to GPU, developers would have to load a large number
+    of mathmatical libraries to talk to low level computaiton. This could quickly increase the 
+    size of package to load and disk footprint of the browser. Asking developers to write 
+    programs at such a low level would be quite challenging as well. It'd be preferable for the 
+    platform to develop a set of common functions that WebAssembly libraries can call into. The
+    set would mask device specific differences and provide a speedy implementations across 
+    platforms. 
 
 
 
@@ -296,7 +305,8 @@ WebAssembly is a new low-level assembly-like language with a compact binary form
 
 As previously stated, systemic support for Machine Learning programs should aim for allowing programs to have the least memory needed, provide most performance support, and preferably ease developer pain in importing their trained model to the web. Mainstream machine learning frameworks usually can produce models in C++ format. Given the above three goals, WebAssembly seems like a fitting solution for ML.
 
-However, the current WebAseembly design do have a few shortcomings when it comes to being applied to ML. First of all, WebAseembly does not have GPU support, a well-known performance accelerator for ML. Second, Bottlenecks brought by network conditions are often motivations behind doing ML computation on the client. Common matrix functions can be large in size. Because WebAssembly is running on a blank slate, the developers have to load related libraries by themselves. If the libraries are built into the platform, much less speed requirement is needed. For example, developers would have to define their own matrix/format data type.
+However, the current WebAseembly design do have a few shortcomings when it comes to being applied to ML. First of all, WebAseembly does not have GPU support, a well-known performance accelerator for ML. Second, Bottlenecks brought by network conditions are often motivations behind doing ML computation on the client. Common matrix functions can be large in size. Because WebAssembly is running on a blank slate, the developers have to load related libraries by themselves. If the libraries are built into the platform, much less speed requirement is needed. For example, developers would have to define their own matrix/format data type. This is also not consistent with
+the promise of web platform, a platform that just "writes once and works everywhere." 
 
 ### WebGPU
 [WebGPU](https://webkit.org/wp-content/uploads/webgpu-api-proposal.html#api) API is a new incubating API that aims at exposing modern GPU features. Its initial API set is a derivation from the Metal language. Prototype for the API has landed in WebKit.
