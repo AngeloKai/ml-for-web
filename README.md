@@ -1,116 +1,113 @@
 # Explainer:  API Sets for Machine Learning on the Web 
 
 With the recent breakthroughs in deep learning and related technologies, the performance of Machine Learning (ML) algorithms has significantly improved. While typically thought of as a technology 
-only applicable to server technologies, machine learning can run on device as well. Developing a 
-machine learning model<sup>[1](#myfootnote1)</sup> usually involves two stages: training and inference: 
+only applicable to server technologies, the inferencing process of machine learning models can run
+on device as well. Development of a 
+machine learning application<sup>[1](#myfootnote1)</sup> usually involves two stages: training and inference: 
 
-* In the first stage, the developer decides on a skeleton model and feed large dataset to the model 
-in repeated iterations to *train* the model. 
-* Then the model would be ported to production environment to infer insights based on incoming data. While training is typically performed on the cloud, Inference can take place in the cloud or on the device. 
+* The developer first *train* the model by first creating a skeleton framework and then iterating the model with large dataset 
+* The developer then port the model to production environment so that it can *infer* insight from user input 
 
-Performing inference on the device has a number of appealing properties, such as performance boost 
+Though training typically takes place in the cloud because it requires large amount of data and computing power, inference can take place in the cloud or on the device. Running inference on the 
+device has a number of appealing properties, such as performance boost 
 due to [edge computing](https://en.wikipedia.org/wiki/Edge_computing), resistance toward poor or no network, and security/privacy protection, etc. 
 
 Although platforms for native applications have all shipped APIs to support machine learning 
-inference on device, similiar functionality has been missing on the web platform. Supporting it can 
-not only supercharge existing applications but also unlock new scenarios (see 
-[use cases](#use-cases)). For instance, with the help of service worker, developers can have 
-their text translation application to be available offline. By inferring the user’s emotions 
+inference on device, similiar functionality has been missing on the web platform. The explainer 
+recommends an approach to address this missing functionality by providing an improved WebAssembly
+package, a WebML (Web Machine Learning) API with a pre-defined set of mathmatical functions 
+that the platform can optimize for, and a WebNN (Web Neural Network) API that provides high level
+abstraction to run neural networks efficiently. Other approaches are also welcomes. After all, 
+explainer is meant for sparking conversations rather than pinpointing a clear solution. 
+
+Supporting ML inferences can not only supercharge existing applications but also unlock new scenarios (see [use cases](#use-cases)). For instance, with the help of 
+[Service Worker](https://github.com/w3c/ServiceWorker), applications can translate between 
+languages with poor or no network. By inferring the user’s emotions 
 based on user’s input (be it text, image, or video), developers can build a rich 
 interactive experience. Applications on new frontiers such as Mixed Reaility can become much 
 "smarter."
 
-Developers have also shown strong interests in the method of deploying machine learning models in 
+Developers have also shown strong interests in deploying inferences in 
 web applications as evidenced by the growing number of machine learning libraries that can run in 
 browsers.<sup>[2](#myfootnote2)</sup> See [here](https://github.com/AngeloKai/js-ml-libraries) for a short list of the libraries or frameworks. [Synaptic.js](http://caza.la/synaptic/#/) and [webdnn](https://mil-tokyo.github.io/webdnn/) are examples of the impressive works developers have done
 to enable this scenario. 
 
 However, though the libraries and frameworks have helped lower the barrier of development, 
-developers continue facing a [painful development process with bottlenecks](#developer-pain) 
-because of limitations with the current platform. Four existing standard efforts helped 
-address the pain but none of them is a complete solution: 
+developers continue facing a 
+[painful development process along with bottlenecks](#developer-pain) 
+because of limitations with the current platform. Developers would run into issues such as 
+porting model from C to JS, large model size, performance, memory overflow etc. Four existing 
+standard efforts helped address the pain but none of them is a complete solution: 
 
 1. [__High Level JS APIs Built On Machine Learning Technology.__](#APIs-Built-On-Machine-Learning-Technologies)
 
-    A number of upcoming JavaScript APIs are built on machine learning technologies, such as  
+    A number of high level JavaScript APIs are built on machine learning technologies, such as  
     the [Web Speech API](https://dvcs.w3.org/hg/speech-api/raw-file/tip/webspeechapi.html), 
     [Web Authentication API](https://w3c.github.io/webauthn/), 
-    [Shape Detection API](https://github.com/WICG/shape-detection-api). However, these APIs 
-    all only address a very specific scenarios instead of offering 
+    [Shape Detection API](https://github.com/WICG/shape-detection-api). 
+    
+    However, these APIs only address a very specific scenarios instead of offering 
     [extensibility](https://extensiblewebmanifesto.org/) to developers.
     For example, developers may want to detect more than the 
     [three basic types of shapes](https://github.com/WICG/shape-detection-api#overview) offered 
-    by the Shape Detection API. Additionally, different browsers building on different 
-    machine learning models will have different accuracy rate and differences in cornercases. 
-    It will be very difficult to achieve interoperable implementations for these APIs. And it
+    by the Shape Detection API. Additionally, it is incredibly challenging to define 
+    interoperability standards for these high level APIs because the browsers are building them with with different machine learning models that have different accuracy rate. And it
     will only be more challenging with the growing complexity of the models. 
 
-1. __WebGL.__ 
+1. [__WebGL.__](#WebGL) 
 
-    The [WebGL](https://www.khronos.org/webgl/) API is the most common API used in the above 
-    mentioned frameworks to increase matrix manipulation performance. Developers create wrappers 
-    around the shaders to run matrix computation in GPUs. However, the wrappers aren't 
-    developer-friendly and usually very taxing on memory. 
+    The [WebGL](https://www.khronos.org/webgl/) API is the most commonly API used in the top libraries because developers can create wrapper functions around shader object to run 
+    matrix computations in GPUs. However, the wrappers aren't 
+    developer-friendly and usually very taxing on memory. Functions that directly do matrix 
+    computation would make developers' life much easier and much simpler for the platform to 
+    optimize.
     
     It is true that the next version of WebGL (WebGL 3.0) could include supporting
-    machine learning inferences into its charter. However, it is important to keep in mind that inferencing and graphics have different requirements when it comes to matrix computation. The former only need low precision level whereas former usually needs high level precision. There
-    are also some machine learning operations that are not matrix operations, such as fast fourier
-    transform or huffman coding. 
+    machine learning inferences into its charter. However, it may be difficult because inferencing and drawing graphics impose different requirements to matrix computations. For example, 
+    the former only needs low level of precision whereas latter most often requires high level of
+    precision. Some machine learning computations are also not entirely around matrix 
+    manipulations, such as fast fourier transform or huffman coding. 
 
-1. __WebGPU.__ 
+1. [__WebGPU.__](#WebGPU)
 
-    The [WebGPU](https://webkit.org/wp-content/uploads/webgpu-api-proposal.html#api) API exposes modern GPU features, though the initial API set is geared toward
-    graphics rendering but less so the type of direct mathmatical computation that inferencing 
-    needs. Contrary to popular beliefs, chips other than GPUs can also be used to accelerate 
-    machine learning. A number of companies produced 
+    The [WebGPU](https://webkit.org/wp-content/uploads/webgpu-api-proposal.html#api) API is 
+    in development to expose modern GPU features, though the initial API proposal based on 
+    [Metal](https://developer.apple.com/documentation/metalperformanceshaders) 
+    appeared to be geared toward graphics rendering but rather than matrix computations. 
+    
+    Contrary to popular beliefs, chips other than GPUs can be much more effective at accelerating
+    ML models. More and more companies have been producing 
     [ASIC (Application-Specific Integrated Circuit)(https://en.wikipedia.org/wiki/Application-specific_integrated_circuit)
-    chips for inferencing. Modern artificial neural networks also use many convolution operations
+    chips for inferencing. Modern artificial neural networks also often employ convolution
     that [DSPs (Digital Signal Processors)](https://en.wikipedia.org/wiki/Digital_signal_processor)
     are designed to accelerate. 
 
-1. __WebAssembly.__
+1. [__WebAssembly.__](#WebAssembly)
 
-    WebAssembly addresses the developer pain of porting binary package of trained machine learning
-    models to the web platform. However, today it only compiles down to CPU instructions but not 
-    GPU level not to mention other chips. GPU acceleration is the main performance driver today. 
-    Assuming WebAssembly does compile down to GPU, developers would have to load a large number
-    of mathmatical libraries to talk to low level computaiton. This could quickly increase the 
-    size of package to load and disk footprint of the browser. Asking developers to write 
-    programs at such a low level would be quite challenging as well. It'd be preferable for the 
-    platform to develop a set of common functions that WebAssembly libraries can call into. The
-    set would mask device specific differences and provide a speedy implementations across 
-    platforms. 
+    WebAssembly addresses the developer pain of porting binary package of trained ML
+    models to the web platform. However, it doesn't address the performance issue because it 
+    doesn't compile to GPU, the primary performance driver for ML (not to mention other chips). . 
 
+    Assuming WebAssembly does compile down to GPU (a feature in consideration as seen in 
+    [WebGPU Future Features](https://github.com/WebAssembly/design/blob/master/FutureFeatures.md)), the immediate issue of performance would be addressed but we would still face the issue of large model size. Each model would have to load its own math library. The platform would also likely
+    face a fragmented ecosystem with many libraries to optimize for. We could 
+    potentially learn from our experience and the type of libraries loaded to develop an API 
+    that all ML models should call into. The platform could then optimize toward this API and 
+    ease the developer pain of needing to understand differences in low level stacks. 
 
+Looking at the four existing efforts and how web platforms supported graphics (WebAssembly + WebGL),
+the best approach forward appeared to be WebAssembly + an API of optimized mathmatical functions (tentatively called
+WebML). Some may argue that this approach would still leave us with the issue of large model size because of large frameworks and we could reduce it down further by developing an API with a higher level of abstraction that models typical neural networks. After all, neural networks have been the 
+forefront of machine learning innovations for the last few years. This "neural network" API could 
+have existing structure for developers to load weights in and an easy way for nodes of the network
+to communicate, such as [SharedBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer).
 
-today when web developers want to run machine learning models in their web applications, they 
-face  in aspects such as file size, performance, memory and power consumptions etc. 
-
-
-
- 
-
-The above-mentioned libraries typically use WebGL to help them improve performance and occasionly use WebAssembly or WebGPU. This is because, broadly speaking, the most performance consuming and most frequent operations in ML inference are matrix computations. Developers cleverly leverage them to accelerate the performance. 
-
-Existing standard APIs or ongoing standardization efforts don't address the needs here. WebGL takes
-up too much memory because fundamentally the kind of mathmatical operations used by ML are 
-different from the kinds used for drawing graphics. WebGPU is better than WebGL but a note here is 
-that GPUs aren't the only chips that can accelerate computing here. CPU/ASIC/DSPs can be used to 
-accelerate. 
-
-This approach would roughly match how native platforms supported them. CoreML is kind of an 
-exception that it still has a porting process but even so the porting is easier because it is still
-C like languages. 
-However, because of a lack of comprehensive look at how to best support machine learning inference in front-end applications, there are still gaps left behind. Native platforms have shipped solutions to help close the gaps: 
+This approach would roughly match how native platforms supported them. Native platforms have shipped solutions to help close the gaps: 
 * support traditional ML algorithms such as decision tree learning or Bayesian algorithms by providing optimized linear algebra libraries and other optimized mathmatical functions 
 * support the Deep Neural Networks approach (center of attention in the recent AI boom) by shipping dedicated DNNs API. If developers find the DNNs API not complex enough to handle their special case, they can also use the optimize linear algebra libraries. 
 
-Similiar solutions can potentially be developed for the web platform. Regardless, having a comprehensive solution would really help reduce developer pain and encourage these types of applications to grow. 
-
-<br>
-P.S. The explainer is just a mean to help spark conversations around ML on the Web. Please feel free to submit PRs to correct me or add additional points. It's a very complicated field with a changing 
-landscape. 
-<br>
+The above approach would be promising but other suggestions are welcomed. After all, this explainer 
+is just meant to help spark conversations around ML on the web to ease developer pain. Please feel free to submit PRs to correct me or add additional points. 
 
 
  
@@ -300,7 +297,7 @@ However, such libraries are not developer-friendly and often very taxing on memo
 
 Although next generation of WebGL API can include more support for direct mathmatical computation, one can argue that this goal is not aligned with the charter of an API that was designed for drawing graphics. Besides, the next version of WebGL (WebGL 3.0) are still far away given that Chrome and Firefox has just implemented the support for the 2.0 version earlier this year.
 
-### Web Assembly
+### WebAssembly
 WebAssembly is a new low-level assembly-like language with a compact binary format and near-native performance. Programs written in C/C++ can be compiled directly to this format to run on the web. On the browsers, WebAssembly programs run in a sandbox that can be used alongside JavaScript.
 
 As previously stated, systemic support for Machine Learning programs should aim for allowing programs to have the least memory needed, provide most performance support, and preferably ease developer pain in importing their trained model to the web. Mainstream machine learning frameworks usually can produce models in C++ format. Given the above three goals, WebAssembly seems like a fitting solution for ML.
