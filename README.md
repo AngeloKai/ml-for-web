@@ -1,8 +1,8 @@
 # Explainer:  API Sets for Machine Learning on the Web 
 
-With the recent breakthroughs in deep learning and related technologies, the performance of Machine Learning (ML) algorithms has significantly improved. While typically thought of as a technology 
-only applicable to server technologies, the inferencing process of machine learning models can run
-on device as well. Development of a 
+With the recent breakthroughs in deep learning and related technologies, Machine Learning (ML) algorithms has drastically improved in terms of accuracy, application, performance etc. While 
+typically thought of as a technology only applicable to server technologies, the 
+inferencing process of machine learning models can run on device as well. Development of a 
 machine learning application<sup>[1](#myfootnote1)</sup> usually involves two stages: training and inference: 
 
 * The developer first *train* the model by first creating a skeleton framework and then iterating the model with large dataset 
@@ -36,7 +36,8 @@ However, though the libraries and frameworks have helped lower the barrier of de
 developers continue facing a 
 [painful development process along with bottlenecks](#developer-pain) 
 because of limitations with the current platform. Developers would run into issues such as 
-porting model from C to JS, large model size, performance, memory overflow etc. Four existing 
+porting model from C to JS, large model size, performance<sup>[6](#myfootnote6)</sup>, 
+memory overflow etc. Four existing 
 standard efforts helped address the pain but none of them is a complete solution: 
 
 1. [__High Level JS APIs Built On Machine Learning Technology.__](#APIs-Built-On-Machine-Learning-Technologies)
@@ -94,6 +95,8 @@ standard efforts helped address the pain but none of them is a complete solution
     potentially learn from our experience and the type of libraries loaded to develop an API 
     that all ML models should call into. The platform could then optimize toward this API and 
     ease the developer pain of needing to understand differences in low level stacks. 
+    Finding this standard set could start from existing standards such as 
+    [BLAS](http://www.netlib.org/blas/).
 
 Looking at the four existing efforts and how web platforms supported graphics (WebAssembly + WebGL),
 the best approach forward appeared to be WebAssembly + an API of optimized mathmatical functions (tentatively called
@@ -114,11 +117,11 @@ is just meant to help spark conversations around ML on the web to ease developer
 ## Use Cases
 Despite the long history of machine learning research and applications, I think it is safe to say we are still uncovering the countless applications ML. Below illustrate some example use cases developers may use machine learning in front-end applications. The sample use cases are based on inspirations from existing demos and production sites/apps. 
 
-### Offline Recommendation Engine
-A web application built with Service Work to be network resistant may wish to build its recommendation engine offline. For example, a site serving images/GIFs/video as content may wish to serve users smart content feed with content cached with Service Worker. Or a productivity application with many different features like Office may want to provide Help when the user is looking to know which feature they should use. 
-
 ### Text Translation 
 A web application may wish to translate text from one language to another offline to be network resilient. For example, the Google Translate service trained a neural network to translate between languages and ported the network to its mobile app. The mobile app can be used offline, though translation may be better online. 
+
+### Offline Recommendation Engine
+A web application built with Service Work to be network resistant may wish to build its recommendation engine offline. For example, a site serving images/GIFs/video as content may wish to serve users smart content feed with content cached with Service Worker. Or a productivity application with many different features like Office may want to provide Help when the user is looking to know which feature they should use. 
 
 ### Object Detection from Images/Videos
 A web application may wish to detect objects from images or videos. For example, [Baidu](https://en.wikipedia.org/wiki/Baidu) built convolutional neural networks (CNNs) into its mobile app so that the app can detect the primary object in the live camera feed and search related merchandise based on the result ([Mobile Deep Learning framework by Baidu](https://github.com/baidu/mobile-deep-learning)).
@@ -142,132 +145,74 @@ A web application built for mixed reality platforms may wish to leverage machine
 
 ## Developer Pain 
 
-To really feel the developer pain, 
-let's walk through the process of 
-how developers would incorporate a machine learning model in their application today: 
+Developers face significant pain when trying a machine learning models into their front-end 
+codebase today. The below walks through a typical development process<sup>[3](#myfootnote3)</sup> and illustrates specific pain points: 
 
-1. Before deciding whether to train a model by themselves, developer would first evaluate whether
-    it is necessary. The platform today offers some API or features that uses machine learning
-    technology behind the scenes. However, they are typically very restrictive. 
+1. Assuming the developer already has a trained model, the developers first face the pain 
+    of large model size. Most models trained with frameworks such as [Tensorflow](https://www.tensorflow.org) can have file size that ranges from a few hundred Mb to 
+    more than one GB. Some frameworks optimizing for mobile experience shrink the model size
+    down to around 20 Mb by applying techniques such as [quantizatio](#quantization).
+    Unfortunately, the process isn't as simple as described. The techniques do run the risk
+    of reducing accuracy so developers have to keep double checking throughout the optimization
+    process. 
 
-1. With a trained model on hand, developers face the first pain of the large file of the model. 
-    Most models trained with optimized frameworks such as [Tensorflow](https://www.tensorflow.org) 
-    can have file size that ranges from a few hundred Mb to more than one GB. Frameworks optimizing
-    for mobile environment can end up with a final build of around 20 Mb. While developers use
-    the framework to slim down the file size, they'd also constantly check to ensure the shrinked
-    version has acceptable accuracy rate.
+1. After the developer combat the model size challenge, they have to face the next challenge of 
+    language choice. The most well-known machine learning frameworks today don't have the option 
+    of training models in JavaScript. The typical option is writing the model in python 
+    , which the frameworks can compile down to executable and sometimes C.<sup>[4](#myfootnote4)</sup> Developers can either transpile the model to JS or 
+    re-compile it to work with WebAssembly. The former option means increased file size 
+    but easier way to improve performance. Developers can easily re-write the model to be 
+    multi-threaded, a feature not yet available in WebAssembly.<sup>[5](#myfootnote5)</sup> 
+    Developers can also more easily accelerate the models with GPU level acceleration 
+    with existing libraries of wrapper functions of WebGL. The latter would mean consistent
+    file size but much harder route to improve performance, though there is a silver lining. 
+    For computations that can hardly be accelerated by GPU, such as Fast Fourier Transform,
+    WebAssembly can accelerate them faster because they would be computed in the CPU directly,
+    such as [WebDSP](https://github.com/shamadee/web-dsp).
 
-1. After the developer combat the model size challenge, they has to face the next challenge of 
-    language choice. The major machine learning frameworks today don't have the option of training 
-    models in JavaScript. The usual option is writing the model in python and compiling them down
-    to C.<sup>[2](#myfootnote3)</sup> Developers have to decide whether to transpile it to JS or 
-    package it with WebAssembly. The former option means increased file size but improved performance because operations can be accelerated by GPUs.  Any machine learning model comes 
-    with the issue of uncertainty. There is always
-    the chance of the model taking up way too long to compute or producing an incorrect result.
-    Blocking the UI thread would be a bad risk to take on. The latter would mean consistent
-    file size but only acceleration within CPUs. 
+1. After a decent model is loaded in a web page, developers could also run into issue with 
+    performance and/or memory overflow issue. Without effective hardware acceleration,
+    matrix operation could take a long time. Inefficient matrix representation, especially of
+    [sparse matrix](#sparse-matrix) could also lead to memory overflow. If data is stored in 
+    storage, frequent read and write operations could also lead to performance slow down. 
 
-1. After the developer gets a model to run with, they'd also likely run into performance and/or
-    memory overflow issue. The matrix operation could take a long time. The matrix representations,
-    especially sparse matrix, could easily lead to memory overflow. Storing things in storage 
-    would also lead to performance slow down. Developers have three options: 
-    1. WebGL
-    1. WebAssembly 
-    1. WebGPU 
+1. During the above process, developers also need to think about what device/platform they 
+    plan to run on to ensure they have the right fallback options. 
 
-1. Once the developer have a reasonably performanant and accurate model in hand, they also need 
-    to design the UI flow. This means they have to figure out which device they can run this on
-    and design the right graceful fallback. 
+Other than application developers' pain points, platform developers also would likely run into
+power issues if enough machine learning applications are running on the platform. Studies and
+experiences have shown that ML can easily drain power. 
 
-Perhaps after explaining all the challenges, people would start asking me why anyone wants to go
-through so much trouble. But it is a challenge IoT developers go through every day. It is a 
-challenge the libraries developers went through as well. At the end of the day, the benefits
-outweight the challenges. We have to recognize that machine learning represents a shift in 
-how we design programs, a shift. 
-
-If they transpile into JS, they will likely run into performance issues and sometimes memory issues. They can address some performance issues with WebGL. But it does require a complicated shim library
-that would instantiate bunch of extra matrices because they use shaders. The extra matrices could
-cause memory overflow. Also, Sometimes they need to use 
-extra mathmatical functions that aren't available such as SparseBLAS or Fast Fourier Transform or 
-Compression, which
-aren't available. They can also use WebGPU if they are on Safari Technology Preview. WebGPU is good
-but isn't really maximizing in terms of performance. Again, the fundamental is the difference 
-in the different requirements for mathmatical computations (8 bit is available). Also, as the chips
-market mature, it could be that we no longer use GPU that much but instead focus on ASIC. If the UI
-thread is busy which means GPUs are probably busy, running ML or NNs are going to take a lot longer
-as well. If they
-are unfortunate people who use CNNs or RNNs that has a lot of convolution, they won't be able to use 
-acceleration provided by DSPs. Or if they use compression to slim down the size and they don't have
-access to DSPs, they run into some issues. Memory issue could be caused by the extra matrics or,
-more importantly, the dense matrics which aren't necessary. It is not that bad but could be. 
-Finally, for people who care about power consumption, if these models aren't run on optimized 
-chips, they could really cause power issues. In the future when a couple of production sites use
-this approach, this could really run into troubles. 
-
-Transpiling it is a lot of trouble and, if it doesn't blow up today, is going to blow up tomorrow. 
-Also it will deter the growth of these applications. WebAssembly should be the golden path here. 
-However, WebAssembly has the challenge of not able to be compiled to fit all these chips 
-requirement. Also, exposing those level of primitives shared by other operations with machine 
-learning models that could potentially heat up too much is trouble. Finally, file size is a major
-issue for thse models already. Today they don't run into issues because they are just demo sites.
-But in the future, do we really want every single site to load a new set of math libraries? Instead,
-the most appropriate path would be to point to WebAssembly but give a common set of math libraries
-for ML. Is that possible? We need discussions but it should be. We know BLAS, SparseBLAS, and NN
-aren't going away. DSPs specific stuff are probably necessary because of CNNs (images processing) 
-and RNNs (NLP). Compression may be up and coming because more complex models may be developed. 
-
-Once the developer is done with the whole model, they would also need to integrate into the UI and 
-make sure to design a fallback. The fallbacks are needed because of uncertainty introduced by 
-ML. Also, in this case, different device will have very different computing powers and storage 
-capability. We need a capability like API here. 
- 
-
-Issues with matrix representation and how slow
-JS is at math. They can use WebGL to accelerate it but it usually require a complicated shim library
-that would instantiate bunch of extra matrices because they use shaders.  However, today WebAssembly cannot be compiled with target of GPU so it lows down a lot. Plus 
-WebAssembly cannot be run in worker thread. But machine learning by nature means it is always 
-a educated guess and not definite state machine. So it could fail and shouldn't stop the main UI 
-thread. 
-
-
-Although the above mentioned challenge seems daunting first, experiences from other platforms 
-such as IoT or native platforms tell us it is something that can be eased off. 
-
+Fortunately our colleagues working on other platforms such as IoT, native apps, or cloud computing,
+have been working on addressing similiar issues so we will have some great advisors along the 
+journey. 
 
 
 ## Native Platform Support 
 
-### APIs
-Support for machine learning operations in native platforms have largely been driven by the need of 
-platform frameworks: 
-* Google's [TensorFlow Lite](https://www.tensorflow.org/mobile/)
-* Microsoft's [Cognitive Toolkit (CNTK)](https://www.microsoft.com/en-us/cognitive-toolkit/)
-* Apple's [CoreML Framework](https://developer.apple.com/documentation/coreml) 
+Recently major native platforms have shipped APIs to support neural network: 
 
-As described above, native platforms have supported machine learning through optimized linear algebras libraries. Most basic linear algebra operations have been standardized through the [Basic Linear 
+* iOS and MacOS shipped 
+    [Basic Neural Network Subroutines (BNNS)](https://developer.apple.com/documentation/accelerate/bnns) and the 
+    [MPS Graph API](http://machinethink.net/blog/ios-11-machine-learning-for-everyone/)
+* UWP platform shipped 
+    [support for model evaluation on UWP platform via the Cognitive Toolkit](https://blogs.windows.com/buildingapps/2017/08/31/cognitive-toolkit-model-evaluation-uwp/)
+* Android shipped 
+    [Neural Network API](https://developer.android.com/ndk/guides/neuralnetworks/index.html)
+
+Native platforms have long had optimized mathmatical libraires that can be hardware accelerated. 
+Some of the mathmatical libraries have come from standardization such as [Basic Linear 
 Algebra Subprograms (BLAS)]http://www.netlib.org/blas/#_history), which 
 has [a variety of implementations](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms#Implementations) in different 
-platforms. Sometimes BLAS doesn't cover everything needed for machine learning, such as [sparse matrix](#sparse-matrix) or [Fast Fourier Transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform).
-In those cases, the platform either provides the functions natively or support them through 
-platform specific frameworks. For example, iOS and MacOS have had the Accelerate Framework, which includes a BLAS implementation, and also recently updated the Framework to cover the missing 
-functions. Android 
-[TensorFlow Lite](https://www.tensorflow.org/mobile/) supports a long list of mathmaticl operations.  
+platforms.
 
-iOS and MacOS shipped Basic Neural Network Subroutines (BNNS) and updated Accelerate Framework for Core ML. The Universal Windows Platform (UWP) has added support for CNTK. Android is also said to release a Deep Neural Network API soon.
-
-Unlike native platforms, web platforms do have its own unique challenges. First of all, many machine learning models can have a big file size. Although Service Worker has really helped close the gap for offline support, storing big file size can still be a challenge. Second, an app with machine learning functionalities can be published to only certain devices that match the performance requirement. The web platform cannot do that and developer will have to figure out a graceful fallback. The platform may have to provide some sort of device capability detection mechanism. 
-
-### Frameworks 
-
-Platform and developers have also built extensive frameworks on top of these APIs for mobile scenarios. Examples include Facebook’s [PyTorch](http://pytorch.org/) and Caffe2go, Google’s TensorFlow Lite, Apple’s CoreML Framework, and CNTK’s support for UWP.
-
-We include frameworks because of two reasons: 1) unlike traditional programming, machine learning development place significant emphasis on the training phase. The final API should make it easy to port the trained models. 2) These frameworks usually are the first one adopting the APIs. 
-
-## Challenges
-
-File size, memory, performance, and power consumption. And we need something to detect device capability.  
-
-As discussed above, developers face a number of challenges when incorporating machine learning models into their applications: 
+Other than platform API support, development frameworks can also build their executables to run
+with hardware accelerations. The frameworks have really helped the developer ecosystem to grow, 
+especially because *training* is so critical in ML development. Examples include: 
+* Google's [TensorFlow Lite and Mobile](https://www.tensorflow.org/mobile/)
+* Microsoft's [CNTK support for UWP](https://docs.microsoft.com/en-us/cognitive-toolkit/CNTK-Library-Evaluation-on-UWP)
+* Apple's [CoreML Framework](https://developer.apple.com/documentation/coreml)
+* Facebook's [Caffe2go](https://code.facebook.com/posts/196146247499076/delivering-real-time-ai-in-the-palm-of-your-hand/) [PyTorch](http://pytorch.org/)
 
 
 
@@ -288,7 +233,7 @@ a feature that uses hardware acceleration ([Image Signal Processors (ISPs)](http
 * The WebRTC (Web Real-Time-Communication API) also offers face detection functionality
     depending on platform implementation. 
 
-One of the common motivations behind building the above APIs are the underlying machine models are computationaly expensive to run. However, it is unscalable to continue adding APIs to the platform for the reason of computational cost. There should be a generic solution that can bring down the computational cost of doing machine learning on the web platform.
+One of the common motivations behind building the above APIs is the underlying machine models are computationaly expensive to run. However, it is unscalable to continue adding APIs to the platform for the reason of computational cost. There should be a generic solution that can bring down the computational cost of doing machine learning on the web platform.
 
 ### WebGL
 The WebGL API was designed to render 3D and 2D graphic content and make use of GPUs behind the scene when necessary. Given that most of graphic processing relies on matrix computation, web developers have developed [libraries that wrap around WebGL to accelerate matrix computation](https://github.com/AngeloKai/js-ml-libraries). 
@@ -307,6 +252,7 @@ the promise of web platform, a platform that just "writes once and works everywh
 
 ### WebGPU
 [WebGPU](https://webkit.org/wp-content/uploads/webgpu-api-proposal.html#api) API is a new incubating API that aims at exposing modern GPU features. Its initial API set is a derivation from the Metal language. Prototype for the API has landed in WebKit.
+
 Although the API aims at exposing low-level GPU functionalities, its initial API set is primarily geared toward graphics rendering and not direct mathmatical computation. Research has also shown that while GPU accelerates computing, specialized chips can be designed in ways that make them much better at machine learning computing. For example, quantization, a common technique to shrink number to less-than-32-bit representation, has proven to be an efficient technique to reduce the size of programs. 
 
 Companies have produced chips designed for machine learning for personal devices instead of using GPUs, such as Movidius' (an Intel company) Myriad VPU, the IBM’s TrueNorth chips, or Intel’s NervanaIf the aim of the WebGPU API is to expose interface for the modern GPU, it would not be suitable for the machine learning field.
@@ -346,7 +292,11 @@ quality libraries are produced etc.
 libraries. I started researching this topic in Aug and could only find a handful of qualities 
 libraries. But when I re-visited the topic in Dec, I've found many more great frameworks.
 
-<a name="myfootnote3">3</a>: Many factors contribute to this phenomone. Here are the few main 
+<a name="myfootnote3">3</a>: Admittedly the process is an overgeneralization because 
+different developers will likely develop differently. For example, some developer may start
+with a neural network already written in JS and try to optimize it for other things. 
+
+<a name="myfootnote4">4</a>: Many factors contribute to this phenomone. Here are the few main 
 factors: 
 1. During the training process, the main focus is on rapid iteration of the model and ease of 
     expressing the model. Compared to other major languages, python is easiest at expressing
@@ -365,3 +315,11 @@ factors:
     easier just go with the default. 
 5. Because of this trend of industry, there is a much larger community of developers working on
     machine learning in python. Developers get much more support using the default option. 
+
+<a name="myfootnote5">5</a>: The module loaded in the WebAssembly VM cannot instantiate a new
+    thread yet. But developers can create multiple [Web Workers](https://html.spec.whatwg.org/multipage/workers.html#workers) and load individual module
+    inside it to run in multi-thread fashion. 
+
+<a name="myfootnote6">6</a>: In machine learning research, performance can sometimes refer to 
+    the accuracy of the models at achieving human-comparable result. In the context of 
+    this explainer, performance strictly refers to process speed. 
