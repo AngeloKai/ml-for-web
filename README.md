@@ -67,7 +67,8 @@ standard efforts helped address the pain but none of them is a complete solution
     machine learning inferences into its charter. However, it may be difficult because inferencing and drawing graphics impose different requirements to matrix computations. For example, 
     the former only needs low level of precision whereas latter most often requires high level of
     precision. Some machine learning computations are also not entirely around matrix 
-    manipulations, such as fast fourier transform or huffman coding. 
+    manipulations, such as [fast fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform) or 
+    [huffman coding](#Huffman-Coding). 
 
 1. [__WebGPU.__](#WebGPU)
 
@@ -166,7 +167,8 @@ codebase today. The below walks through a typical development process<sup>[3](#m
     Developers can also more easily accelerate the models with GPU level acceleration 
     with existing libraries of wrapper functions of WebGL. The latter would mean consistent
     file size but much harder route to improve performance, though there is a silver lining. 
-    For computations that can hardly be accelerated by GPU, such as Fast Fourier Transform,
+    For computations that can hardly be accelerated by GPU, such as 
+    [fast fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform),
     WebAssembly can accelerate them faster because they would be computed in the CPU directly,
     such as [WebDSP](https://github.com/shamadee/web-dsp).
 
@@ -230,9 +232,6 @@ In the past few years, we have added support for a few new APIs that relies on m
 * The [Shape Detection API](https://github.com/WICG/shape-detection-api), a recent addition to the Web Incubator CG (WICG), allow developers to detect faces, barcodes, and text in live or still images. This API is a good example of 
 a feature that uses hardware acceleration ([Image Signal Processors (ISPs)](https://en.wikipedia.org/wiki/Image_processor)) to run machine learning operations.  
 
-* The WebRTC (Web Real-Time-Communication API) also offers face detection functionality
-    depending on platform implementation. 
-
 One of the common motivations behind building the above APIs is the underlying machine models are computationaly expensive to run. However, it is unscalable to continue adding APIs to the platform for the reason of computational cost. There should be a generic solution that can bring down the computational cost of doing machine learning on the web platform.
 
 ### WebGL
@@ -245,7 +244,7 @@ Although next generation of WebGL API can include more support for direct mathma
 ### WebAssembly
 WebAssembly is a new low-level assembly-like language with a compact binary format and near-native performance. Programs written in C/C++ can be compiled directly to this format to run on the web. On the browsers, WebAssembly programs run in a sandbox that can be used alongside JavaScript.
 
-As previously stated, systemic support for Machine Learning programs should aim for allowing programs to have the least memory needed, provide most performance support, and preferably ease developer pain in importing their trained model to the web. Mainstream machine learning frameworks usually can produce models in C++ format. Given the above three goals, WebAssembly seems like a fitting solution for ML.
+As previously stated, systemic support for Machine Learning programs should aim for allowing programs to have the least memory needed, provide most performance support, and preferably ease developer pain in importing their trained model to the web. Mainstream machine learning frameworks usually can produce models in C format. Given the above three goals, WebAssembly seems like a fitting solution for ML.
 
 However, the current WebAseembly design do have a few shortcomings when it comes to being applied to ML. First of all, WebAseembly does not have GPU support, a well-known performance accelerator for ML. Second, Bottlenecks brought by network conditions are often motivations behind doing ML computation on the client. Common matrix functions can be large in size. Because WebAssembly is running on a blank slate, the developers have to load related libraries by themselves. If the libraries are built into the platform, much less speed requirement is needed. For example, developers would have to define their own matrix/format data type. This is also not consistent with
 the promise of web platform, a platform that just "writes once and works everywhere." 
@@ -255,30 +254,52 @@ the promise of web platform, a platform that just "writes once and works everywh
 
 Although the API aims at exposing low-level GPU functionalities, its initial API set is primarily geared toward graphics rendering and not direct mathmatical computation. Research has also shown that while GPU accelerates computing, specialized chips can be designed in ways that make them much better at machine learning computing. For example, quantization, a common technique to shrink number to less-than-32-bit representation, has proven to be an efficient technique to reduce the size of programs. 
 
-Companies have produced chips designed for machine learning for personal devices instead of using GPUs, such as Movidius' (an Intel company) Myriad VPU, the IBM’s TrueNorth chips, or Intel’s NervanaIf the aim of the WebGPU API is to expose interface for the modern GPU, it would not be suitable for the machine learning field.
+Companies have produced chips designed for machine learning for personal devices instead of using GPUs, such as Movidius' (an Intel company) Myriad VPU, the IBM’s TrueNorth chips, or Intel’s Nervana. If the aim of the WebGPU API is to expose interface for the modern GPU, it would not be suitable for the machine learning field.
 
 
 ## Appendix: Related Research 
 
 The design of an appropriate API surface for machine learning inference should incorporate learnings from research about optimizing machine learning models to run on devices with low computational power such as IoT devices. The section covers a few sample techniques for inspiration purpose: quantization, huffman coding, discretization, and sparse matrix.
-A common theme among the techniques is they are all trade-offs between accuracy and other qualities.
 
 ### Quantization
-Quantization refers to a group of techniques ot convert high precision floating point numbers typically used in the training phase to low precision compact format numbers. Doing so allows us to reduce the file size and accelerate the computation. This technique is particularly useful for DNNs.
-During the training stage, programs typically compute in high precision floating point numbers. That is because the biggest challenge in training is to get the models to work and floating number is best at preserving accuracy. After all tasks like training neural network is essentially keep tweaking the weights of the network until a satifatory result is obtained. Plus developers usually have access to lot of GPUs during training and GPUs work very well with floating point numbers. Doing so would allow training to run a lot faster so to not waste development time.
-During the inference, the main challenge becomes the shrinking the file size. As it turns out, converting 32 bit numbers into 8 bit numbers shrinks the file size and memory throughput by four times. The same goes for caches and SIMD instructions. Because many machine learning algorithms are now well-equipped to handle statistical noise, reducing precision often doesn’t lead to too much decrease in accuracy. Although low precision may not matter that much for GPUs, it can matter a lot for DSPs which are usually designed to operate with 8 bit numbers. Nowadays most computers including smartphones come with DSPs.
+Quantization refers to a group of techniques to convert high precision floating point numbers typically used in the training phase to low precision compact format numbers. Doing so allows us to reduce the file size and accelerate the computation. This technique is particularly useful for DNNs.
 
-### Huffman Coding
-Huffman coding is a commonly used compression alogrithm that uses variable-length codeward to encode symbols. Studies suggest Huffman coding can usually shrink network file size by about 20% to 30%. The technique can be used after quantization to reduce size. DSPs are really good here. 
+During training, programs typically compute in high precision floating point numbers. That is because the biggest challenge in training is to get the models to work and floating number is best at preserving accuracy. After all, training a neural network is essentially a process of
+continousluy tweaking the weights of the network until a satifatory result is obtained. Plus developers usually have access to lot of GPUs during training and GPUs work very well with floating point numbers. Doing so would allow training to run a lot faster so to not waste development time.
+
+During inference, a key challenge is now shrinking the file size. Converting numbers 
+represented with 32 or 64 bits into 8 bits or less numbers shrinks the file size and memory throughput by four times. The same goes for caches and SIMD instructions. Because machine learning algorithms are particularly adept at canceling out noise, reducing precision often doesn’t lead to 
+too much decrease in accuracy. Although low precision may not matter that much for GPUs, it can matter a lot for DSPs which are usually designed to operate with 8 bit numbers. Nowadays most computers including smartphones come with DSPs.
+
+TensorFlow website has an [excellant explanation](https://www.tensorflow.org/performance/quantization) 
+for how quantization works with neural networks.
 
 ### Discretization
-Discretization is the process to transfer continious functions to to discrete numbers. Some may argue quantization is part of discretization. One thing to call out about this technique is that this really helps decrease power consumption.
+[Discretization](https://en.wikipedia.org/wiki/Discretization) is the process to transfer continious functions to to discrete numbers. Some may argue discretization is part of quantization so it comes with the above mentioned benefits. But this section calls out discretization because
+exploratory research suggest this could significantly improve power consumption. Both of these
+papers are great reads on this topic: [Binarized Neural Networks: Training Neural Networks with Weights and
+Activations Constrained to +1 or −1](https://arxiv.org/pdf/1602.02830.pdf) and [Ternary Neural Networks for Resource-Efficient AI Applications
+](https://arxiv.org/pdf/1609.00222.pdf). 
+
+### Huffman Coding
+[Huffman coding](https://www.geeksforgeeks.org/greedy-algorithms-set-3-huffman-coding/) is 
+a commonly used compression alogrithm that uses variable-length codeward to encode symbols. 
+It's been applied in many areas such as vidoe and audio codecs to further compress after other 
+techniques have been applied. 
+
+[Deep Compression: Compressing Deep Neural Networks with Pruning, Trained Quantization and Huffman Coding](https://arxiv.org/abs/1510.00149) suggest Huffman coding can usually shrink network file 
+size by about 20% to 30%. It can be used at the end of the optimization process to further
+reduce its size. The de-compression process can also be accelerated by 
+[DSPs](https://en.wikipedia.org/wiki/Digital_signal_processor). 
 
 ### Sparse Matrix
-Most machine learning problems don’t involve a densely populated matrix. Adopting sparse matrix data structures and specifical numerical methods for those data structures can significantly reduce the size of the memory.
-
-### Fast Fourier Transform 
-Luckily DSPs are really good at convolution like operations. 
+Most machine learning problems don’t involve a densely populated matrix. For example, on a map,
+the cities are very densely populated but most of the wilderness are scarcely populated.
+Adopting sparse 
+represenation of those matrixs and computation methods for sparse representatiosn, such as 
+[SparseBLAS](http://math.nist.gov/spblas/), can significantly reduce the size of the models. [A Survey of Sparse Representation:
+Algorithms and Applications](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7102696) 
+describes a variety of algorithms applicable to sparse representations of matrix. 
 
 
 <br>
