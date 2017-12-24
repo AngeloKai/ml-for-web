@@ -1,7 +1,7 @@
 # Explainer:  API Sets for Machine Learning on the Web 
 
 With the recent breakthroughs in deep learning and related technologies, Machine Learning (ML) 
-algorithms has drastically improved in terms of accuracy, application, performance etc. While 
+algorithms have drastically improved in terms of accuracy, application, performance etc. While 
 typically thought of as a technology only applicable to server technologies, the 
 inferencing process of machine learning models can run on device as well. Development of a 
 machine learning application<sup>[1](#myfootnote1)</sup> usually involves two stages: 
@@ -11,26 +11,32 @@ machine learning application<sup>[1](#myfootnote1)</sup> usually involves two st
 * The developer then port the model to production environment so that 
     it can *infer* insight from user input 
 
-Though training typically takes place in the cloud because it requires large amount of data and 
+Though training typically takes place in the cloud because it requires a significant 
+amount of data and 
 computing power, inference can take place in the cloud or on the device. Running inference on the 
 device has a number of appealing properties, such as performance boost 
 due to [edge computing](https://en.wikipedia.org/wiki/Edge_computing), resistance toward poor or 
 no network, and security/privacy protection, etc. 
 
 Although platforms for native applications have all shipped APIs to support machine learning 
-inference on device, similiar functionality has been missing on the web platform. The explainer 
+inference on device, similar functionality has been missing on the web platform. The explainer 
 recommends an approach to address this missing functionality by providing an improved WebAssembly
-package, a WebML (Web Machine Learning) API with a pre-defined set of mathmatical functions 
-that the platform can optimize for, and a WebNN (Web Neural Network) API that provides high level
-abstraction to run neural networks efficiently. Other approaches are also welcomes. After all, 
+package, a WebML (Web Machine Learning) API with a pre-defined set of mathematical functions 
+that the platform can optimize for, and a WebNN (Web Neural Network) API that provides a high-level abstraction to run neural networks efficiently. 
+Other approaches are also welcomed. After all, 
 explainer is meant for sparking conversations rather than pinpointing a clear solution. 
 
-Supporting ML inferences can not only supercharge existing applications but also unlock new 
+Please feel free to submit issues or PRs to correct me or add additional points. I am excited
+to hear more conversations around this topic.
+
+## Introduction
+
+Supporting ML inferences not only can supercharge existing applications but also can unlock new 
 scenarios (see [use cases](#use-cases)). For instance, with the help of 
 [Service Worker](https://github.com/w3c/ServiceWorker), applications can translate between 
 languages with poor or no network. By inferring the user’s emotions 
 based on user’s input (be it text, image, or video), developers can build a rich 
-interactive experience. Applications on new frontiers such as Mixed Reaility can become much 
+interactive experience. Applications on new frontiers such as Mixed Reality can become much 
 "smarter."
 
 Developers have also shown strong interests in deploying inferences in 
@@ -47,7 +53,8 @@ because of limitations with the current platform. Developers would run into issu
 porting model from C to JS, large model size, performance<sup>[6](#myfootnote6)</sup>, 
 memory overflow etc. 
 
-Four existing standard efforts helped address the pain but none of them is a complete solution: 
+Four existing standard efforts helped address the pain, but none of them 
+is a complete solution: 
 
 1. [__High Level JS APIs Built On Machine Learning Technology.__](#APIs-Built-On-Machine-Learning-Technologies)
 
@@ -62,7 +69,7 @@ Four existing standard efforts helped address the pain but none of them is a com
     [three basic types of shapes](https://github.com/WICG/shape-detection-api#overview) offered 
     by the Shape Detection API. It is also incredibly challenging to define 
     interoperability standards for these APIs because the browsers are building them 
-    with with different machine learning models that have different accuracy rate. And it
+    with different machine learning models that have different accuracy rate. And it
     will only be more challenging with the growing complexity of the models. 
 
 1. [__WebGL.__](#WebGL) 
@@ -106,15 +113,15 @@ Four existing standard efforts helped address the pain but none of them is a com
     mean much more extra efforts.
 
     WebAssembly also doesn't address the fundamental problem that the platform lacks good support 
-    for direct mathmatical computations that inferencing needs. In the long term, this lack of 
+    for direct mathematical computations that inferencing needs. In the long term, this lack of 
     support could mean an over-bloated browser runtime and multiple libraries for browsers to 
-    optimize. Learning from existing pratices and standard efforts such as 
-    [BLAS](http://www.netlib.org/blas/), we could develop a new API of mathmatical operations for
+    optimize. Learning from existing practices and standard efforts such as 
+    [BLAS](http://www.netlib.org/blas/), we could develop a new API of mathematical operations for
     inferencing with appropriate hardware accelerations. 
 
-Looking at the four existing efforts and how web platforms supported similiar issues such as the
+Looking at the four existing efforts and how web platforms supported similar issues such as the
 existing WebAssembly + WebGL approach, the best approach forward appeared to be 
-WebAssembly + an API of optimized mathmatical functions (tentatively called
+WebAssembly + an API of optimized mathematical functions (tentatively called
 WebML). Some may argue that this approach would still leave us with the issue of large model 
 size because of large frameworks and we could reduce it down further by developing an API with a 
 higher level of abstraction that models typical neural networks. After all, 
@@ -126,14 +133,11 @@ to communicate, such as
 
 This approach would roughly match [how native platforms supported them](#native-platform-support): 
 * support traditional ML algorithms such as decision tree learning or Bayesian algorithms 
-    by providing optimized linear algebra libraries and other optimized mathmatical functions 
+    by providing optimized linear algebra libraries and other optimized mathematical functions 
 * support the Deep Neural Networks approach (center of attention in the recent AI boom) by 
     shipping dedicated DNNs API. If developers find the DNNs API not complex enough to 
     handle their special case, they can also use the optimize linear algebra libraries. 
 
-The above approach would be promising but other suggestions are welcomed. After all, this explainer 
-is just meant to help spark conversations around ML on the web to ease developer pain. Please 
-feel free to submit PRs to correct me or add additional points. 
 
  
 ## Use Cases
@@ -167,8 +171,8 @@ object detection to hone in on certain areas. For instance, if the developer ant
 the users would show them certain types of images, they could train the models with 
 only those images to get better accuracy:
 
-* An application may train a objection detection model with only credit card number images 
-to auto detect those numbers from live camera feed. Doing so reduces friction with 
+* An application may train an objection detection model with only credit card number images 
+to auto-detect those numbers from live camera feed. Doing so reduces friction with 
 entering credit card number and increases conversion rate from basic users to premium users. 
 * An application for streaming/uploading videos may wish to perform live check of the 
 camera feed to ensure the user isn’t showing obscene content for law compliance purpose.
@@ -205,7 +209,7 @@ A web application built for mixed reality platforms may wish to leverage machine
 to anticipate user intention and provide assistance as needed. For example, when a 
 worker is learning how to operate a new machine, the application could show how 
 to operate each component as the worker gazes at each component. To do so, the app 
-developer will need a objection detection model that is tuned to detect the 
+developer will need an objection detection model that is tuned to detect the 
 components because they aren't included in typical image detection 
 databases like [ImageNet](http://www.image-net.org/).  
 
@@ -220,22 +224,22 @@ process<sup>[3](#myfootnote3)</sup> and illustrates specific pain points:
     such as [Tensorflow](https://www.tensorflow.org) can have file 
     size that ranges from a few hundred Mb to 
     more than one GB. Some frameworks optimizing for mobile experience shrink the model size
-    down to around 20 Mb by applying techniques such as [quantizatio](#quantization).
+    down to around 20 Mb by applying techniques such as [quantization](#quantization).
     Unfortunately, the process isn't as simple as described. The techniques do run the risk
-    of reducing accuracy so developers have to keep double checking throughout the optimization
+    of reducing accuracy, so developers have to keep double checking throughout the optimization
     process. 
 
 1. After the developer combat the model size challenge, they have to face the next challenge of 
     language choice. The most well-known machine learning frameworks today don't have the option 
-    of training models in JavaScript. The typical option is writing the model in python 
-    , which the frameworks can compile down to executable and 
+    of training models in JavaScript. The typical option is writing the model in python, 
+    which the frameworks can compile down to executable and 
     sometimes C.<sup>[4](#myfootnote4)</sup> Developers can either transpile the model to JS or 
     re-compile it to work with WebAssembly. The former option means increased file size 
     but easier way to improve performance. Developers can easily re-write the model to be 
     multi-threaded, a feature not yet available in WebAssembly.<sup>[5](#myfootnote5)</sup> 
     Developers can also more easily accelerate the models with GPU level acceleration 
     with existing libraries of wrapper functions of WebGL. The latter would mean consistent
-    file size but much harder route to improve performance, though there is a silver lining. 
+    file size but much harder route to improving performance, though there is a silver lining. 
     For computations that can hardly be accelerated by GPU, such as 
     [fast fourier transform](https://en.wikipedia.org/wiki/Fast_Fourier_transform),
     WebAssembly can accelerate them faster because they would be computed in the CPU directly,
@@ -254,8 +258,9 @@ Other than application developers' pain points, platform developers also would l
 power issues if enough machine learning applications are running on the platform. Studies and
 experiences have shown that ML can easily drain power. 
 
-Fortunately our colleagues working on other platforms such as IoT, native apps, or cloud computing,
-have been working on addressing similiar issues so we will have some great advisors along the 
+Fortunately, our colleagues working on other platforms such as IoT, native apps, 
+or cloud computing,
+have been working on addressing similar issues so we will have some great advisors along the 
 journey. 
 
 
@@ -276,12 +281,12 @@ learning technologies:
     differences between the implementations, speech recognition technology has matured 
     enough to mask the differences. 
 
-* __[Web Authentication API](https://w3c.github.io/webauthn/)__ lets developers to 
+* __[Web Authentication API](https://w3c.github.io/webauthn/)__ lets developers
     authenticate users with strong authenticators, such as fingerprint scanners, facial 
-    recognition systems, usb tokens etc. Biometric authenticators all employ 
+    recognition systems, USB tokens etc. Biometric authenticators all employ 
     machine learning technologies one way or another. Although biometric 
     recognition technology has matured enough that interoperability differences are small, 
-    different authenticators do have different success rate and these differences
+    different authenticators do have different success rate, and these differences
     have constantly been a point of contention. 
 
 * __[Shape Detection API](https://github.com/WICG/shape-detection-api)__, a recent 
@@ -291,15 +296,15 @@ learning technologies:
     acceleration ([Image Signal Processors (ISPs)](https://en.wikipedia.org/wiki/Image_processor)) 
     to run machine learning operations.  
 
-Among other arguments, one arguments for building the APIs is the underlying machine models 
-are computationaly expensive to run and need hardware acceleration. However, it is 
+Among other reasons, one argument for building the APIs is the underlying machine models 
+are computationally expensive to run and need hardware acceleration. However, it is 
 unscalable to continue adding APIs to 
 the platform for the reason of computational cost. There should be a generic solution that 
 can bring down the computational cost of doing machine learning on the web platform.
 
 ### WebGL
-The WebGL API was designed to render 3D and 2D graphic content and make use of GPUs 
-behind the scene when necessary. Given that most of graphic processing relies on matrix 
+The WebGL API was designed to render 3D and 2D graphics and make use of GPUs 
+behind the scene when necessary. Given that most graphic processing relies on matrix 
 computation, web developers have developed 
 [libraries that wrap around WebGL to accelerate matrix computation](https://github.com/AngeloKai/js-ml-libraries). 
 
@@ -309,8 +314,8 @@ Take the example of this
 To compute matrix multiplication, the function has to:
 
 1. instantiate two RGBA texel arrays
-1. tranpose one of the arrays
-1. create 2 input textures and 1 output texture
+1. transpose one of the arrays
+1. create two input textures and one output texture
 1. bind input texture
 1. activate a shader
 1. set shader parameters
@@ -320,7 +325,7 @@ To compute matrix multiplication, the function has to:
 
 As seen above, the code is more than complicated and causes unnecessary amount of instantiation.
 
-The next generation of WebGL API could include more support for direct mathmatical 
+The next generation of WebGL API could include more support for direct mathematical 
 computation. However, one can argue that this goal is not aligned with the charter of an API 
 that was designed for drawing graphics. Inferencing and drawing graphics also impose 
 different requirements to matrix manipulations. For example, research in neural network 
@@ -331,15 +336,15 @@ high require high precision. The working group may have a hard time reconciling 
 ### WebGPU
 [WebGPU](https://webkit.org/wp-content/uploads/webgpu-api-proposal.html#api) API is a new 
 incubating API that aims at exposing modern GPU features. Its initial API set is a 
-derivation from the Metal language. Prototype for the API has landed in WebKit.
+derivation of the Metal language. A prototype for the API has landed in WebKit.
 
 Although the API aims at exposing low-level GPU functionalities, its initial API set is primarily 
-geared toward graphics rendering and not direct mathmatical computation that is more wanted by
+geared toward graphics rendering and not direct mathematical computation that is more wanted by
 the machine learning community. Additionally, research has also shown 
 that while GPU accelerates computing, other chips can be used to accelerate inferencing. 
 Companies have produced 
 [ASIC](https://en.wikipedia.org/wiki/Application-specific_integrated_circuit) chips 
-for either on-deivce or in-cloud inferencing, such as such as 
+for either on-device or in-cloud inferencing, such as such as 
 Movidius' (an Intel company) Myriad VPU, the IBM’s TrueNorth chips, 
 or Intel’s Nervana. [DSPs]([DSPs](https://en.wikipedia.org/wiki/Digital_signal_processor))
 can also accelerate convolutions, a common operation in neural networks. 
@@ -347,17 +352,17 @@ can also accelerate convolutions, a common operation in neural networks.
 ### WebAssembly
 WebAssembly is a new low-level assembly-like language with a compact binary format and 
 near-native performance. Because programs written in C/C++ can be compiled directly to 
-WebAssembly to run in browsers, WebAssembly could really address the developer pain in importing
+WebAssembly to run in browsers, WebAssembly addresses the developer pain in importing
 models trained in modern frameworks. 
 
 However, the current WebAssembly designs do have a few limitations when it comes 
 to inferencing: 
 1. WebAseembly doesn't yet have GPU support, a well-known performance accelerator for ML.
 1. Modules running in the WebAssembly cannot run multi-threads yet. Though developers can
-    split their programs to have separate modules and load each into its own Web Worker 
-    to have multi-thread support, this is unnecessary pain for developers. 
-1. Because the platform doesn't yet have good suppport for matrix computation and other 
-    needed mathmatical operations, each website would still need to load their own math
+    split their programs to have separate modules and load each into separate Web Worker 
+    to have multi-thread support, this is an unnecessary pain for developers. 
+1. Because the platform doesn't yet have good support for matrix computation and other 
+    needed mathematical operations, each website would still need to load their own math
     libraries. This could lead to an over-bloated browser with multiple libraries for 
     the browsers to optimize. 
 
@@ -373,14 +378,14 @@ Recently major native platforms have shipped APIs to support neural network:
 * Android shipped 
     [Neural Network API](https://developer.android.com/ndk/guides/neuralnetworks/index.html)
 
-Native platforms have long had optimized mathmatical libraires that can be hardware accelerated. 
-Some of the mathmatical libraries have come from standardization such as [Basic Linear 
+Native platforms have long had optimized mathematical libraries that can be hardware accelerated. 
+Some of the mathematical libraries have come from standardization such as [Basic Linear 
 Algebra Subprograms (BLAS)]http://www.netlib.org/blas/#_history), which 
 has [a variety of implementations](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms#Implementations) 
-in different platforms.
+on different platforms.
 
 Other than platform API support, development frameworks can also build their executables to run
-with hardware accelerations. The frameworks have really helped the developer ecosystem to grow, 
+with hardware accelerations. The frameworks have helped the developer ecosystem to grow, 
 especially because *training* is so critical in ML development. Examples include: 
 * Google's [TensorFlow Lite and Mobile](https://www.tensorflow.org/mobile/)
 * Microsoft's [CNTK support for UWP](https://docs.microsoft.com/en-us/cognitive-toolkit/CNTK-Library-Evaluation-on-UWP)
@@ -404,38 +409,38 @@ This technique is particularly useful for DNNs.
 During training, programs typically compute in high precision floating point numbers. That is 
 because the biggest challenge in training is to get the models to work and floating number 
 is best at preserving accuracy. After all, training a neural network is essentially a process of
-continousluy tweaking the weights of the network until a satifatory result is obtained. 
+continuously tweaking the weights of the network until a satisfactory result is obtained. 
 Plus developers usually have access to lot of GPUs during training and GPUs work 
 very well with floating point numbers. Doing so would allow training to run a 
 lot faster so to not waste development time.
 
 During inference, a key challenge is now shrinking the file size. Converting numbers 
-represented with 32 or 64 bits into 8 bits or less numbers shrinks the file size and memory 
+represented with 32 or 64 bits into 8 bits or fewer numbers shrinks the file size and memory 
 throughput by four times. The same goes for caches and SIMD instructions. Because machine 
 learning algorithms are particularly adept at canceling out noise, 
 reducing precision often doesn’t lead to 
 too much decrease in accuracy. Although low precision may not matter that much for GPUs, it can 
-matter a lot for DSPs which are usually designed to operate with 8 bit numbers. Nowadays most 
+matter a lot for DSPs which are usually designed to operate with 8-bit numbers. Nowadays most 
 computers including smartphones come with DSPs.
 
 TensorFlow website has an 
-[excellant explanation](https://www.tensorflow.org/performance/quantization) 
+[excellent explanation](https://www.tensorflow.org/performance/quantization) 
 for how quantization works with neural networks.
 
 ### Discretization
 [Discretization](https://en.wikipedia.org/wiki/Discretization) is the process to transfer 
-continious functions to to discrete numbers. Some may argue discretization is part of 
-quantization so it comes with the above mentioned benefits. But this section calls 
+continuous functions to discrete numbers. Some may argue discretization is part of 
+quantization, so it comes with the above-mentioned benefits. But this section calls 
 out discretization because
-exploratory research suggest this could significantly improve power consumption. Both of these
+exploratory research suggests this could significantly improve power consumption. Both of these
 papers are great reads on this topic: 
 [Binarized Neural Networks: Training Neural Networks with Weights and Activations Constrained to +1 or −1](https://arxiv.org/pdf/1602.02830.pdf) and 
 [Ternary Neural Networks for Resource-Efficient AI Applications](https://arxiv.org/pdf/1609.00222.pdf). 
 
 ### Huffman Coding
 [Huffman coding](https://www.geeksforgeeks.org/greedy-algorithms-set-3-huffman-coding/) is 
-a commonly used compression alogrithm that uses variable-length codeward to encode symbols. 
-It's been applied in many areas such as vidoe and audio codecs to further compress after other 
+a commonly used compression algorithm that uses variable-length codeword to encode symbols. 
+It's been applied in many areas such as video and audio codecs to further compress after other 
 techniques have been applied. 
 
 [Deep Compression: Compressing Deep Neural Networks with Pruning, Trained Quantization and Huffman Coding](https://arxiv.org/abs/1510.00149) 
@@ -446,9 +451,9 @@ reduce its size. The de-compression process can also be accelerated by
 
 ### Sparse Matrix
 Most machine learning problems don’t involve a densely populated matrix. For example, on a map,
-the cities are very densely populated but most of the wilderness are scarcely populated.
+the cities are very densely populated, but most of the wilderness are scarcely populated.
 Adopting sparse 
-represenation of those matrixs and computation methods for sparse representatiosn, such as 
+representation of those matrices and computation methods for sparse representation, such as 
 [SparseBLAS](http://math.nist.gov/spblas/), can significantly reduce the size of the models. [A Survey of Sparse Representation:
 Algorithms and Applications](http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7102696) 
 describes a variety of algorithms applicable to sparse representations of matrix. 
@@ -469,18 +474,18 @@ libraries. But when I re-visited the topic in Dec, I've found many more great fr
 different developers will likely develop differently. For example, some developer may start
 with a neural network already written in JS and try to optimize it for other things. 
 
-<a name="myfootnote4">4</a>: Many factors contribute to this phenomone. Here are the few main 
+<a name="myfootnote4">4</a>: Many factors contribute to this phenomenon. Here are the few main 
 factors: 
 1. During the training process, the main focus is on rapid iteration of the model and ease of 
     expressing the model. Compared to other major languages, python is easiest at expressing
-    mathmatical formula. New students to machine learning typically learn things in Python as
+    mathematical formula. New students to machine learning typically learn things in Python as
     well. 
 2. It's until the past few years that JavaScript has decent support for raw buffers. 
-    Majroity of machine learning codes have to do with matrix manipulations. Using raw buffer 
+    Majority of machine learning codes have to do with matrix manipulations. Using raw buffer 
     or at least objects with buffers to represent matrix is a much more memory saving option. 
 3. There is a pre-conceived notion that JavaScript is slow. Abhishek Soni's 
     [Machine Learning with JavaScript](https://hackernoon.com/machine-learning-with-javascript-part-1-9b97f3ed4fe5) 
-    clarifies this preconceived notion really well. 
+    clarifies this preconceived notion well. 
 4. Because the majority of the industry has gone with the option of python + C, the cloud 
     platforms are optimized for that. Developers these days rarely train anything in local 
     environment but usually use cloud platforms such as Azure, AWS, or GCP. Though developers
@@ -496,4 +501,4 @@ factors:
 
 <a name="myfootnote6">6</a>: In machine learning research, performance can sometimes refer to 
     the accuracy of the models at achieving human-comparable result. In the context of 
-    this explainer, performance strictly refers to process speed. 
+    this explainer, performance strictly refers to processing speed. 
