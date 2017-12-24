@@ -157,7 +157,7 @@ A web application built with Service Work to be network resistant may wish to bu
 recommendation engine offline. For example, a site serving images/GIFs/video as content 
 may wish to serve users smart content feed with content cached with Service Worker. 
 Or a productivity application with many different features like Office may want to 
-provide Help when the user is looking to know which feature they should use. 
+provide [Help](https://support.office.com/en-us/article/Where-is-the-product-Help-in-Office-2016-199950c6-1260-44fe-ba2e-e95968d05397) when the user is looking to know which feature they should use. 
 
 ### Object Detection from Images/Videos
 A web application may wish to detect objects from images or videos. For example, 
@@ -345,8 +345,9 @@ that while GPU accelerates computing, other chips can be used to accelerate infe
 Companies have produced 
 [ASIC](https://en.wikipedia.org/wiki/Application-specific_integrated_circuit) chips 
 for either on-device or in-cloud inferencing, such as such as 
-Movidius' (an Intel company) Myriad VPU, the IBM’s TrueNorth chips, 
-or Intel’s Nervana. [DSPs]([DSPs](https://en.wikipedia.org/wiki/Digital_signal_processor))
+[Movidius' (an Intel company) Myriad VPU](https://www.movidius.com/technology), 
+the [IBM’s TrueNorth chips](https://www.ibm.com/blogs/research/2016/09/deep-learning-possible-embedded-systems-thanks-truenorth/), 
+or [Intel’s Nervana](https://www.intelnervana.com/technology/). [DSPs]([DSPs](https://en.wikipedia.org/wiki/Digital_signal_processor))
 can also accelerate convolutions, a common operation in neural networks. 
 
 ### WebAssembly
@@ -373,7 +374,7 @@ Recently major native platforms have shipped APIs to support neural network:
 * iOS and MacOS shipped 
     [Basic Neural Network Subroutines (BNNS)](https://developer.apple.com/documentation/accelerate/bnns) 
     and the [MPS Graph API](http://machinethink.net/blog/ios-11-machine-learning-for-everyone/)
-* UWP platform shipped 
+* Universal Windows Platform (UWP) shipped 
     [support for model evaluation on UWP platform via the Cognitive Toolkit](https://blogs.windows.com/buildingapps/2017/08/31/cognitive-toolkit-model-evaluation-uwp/)
 * Android shipped 
     [Neural Network API](https://developer.android.com/ndk/guides/neuralnetworks/index.html)
