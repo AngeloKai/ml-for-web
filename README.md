@@ -6,7 +6,8 @@ typically thought of as a technology only applicable to server technologies, the
 inferencing process of machine learning models can run on device as well. Development of a 
 machine learning application<sup>[1](#myfootnote1)</sup> usually involves two stages: 
 
-* The developer first *train* the model by first creating a skeleton framework and then 
+* The developer first *train* the model<sup>[2](#myfootnote2)</sup> by first creating a 
+    skeleton framework and then 
     iterating the model with large dataset 
 * The developer then port the model to production environment so that 
     it can *infer* insight from user input 
@@ -41,7 +42,7 @@ interactive experience. Applications on new frontiers such as Mixed Reality can 
 
 Developers have also shown strong interests in deploying inferences in 
 web applications as evidenced by the growing number of machine learning libraries that can run in 
-browsers.<sup>[2](#myfootnote2)</sup> See [here](https://github.com/AngeloKai/js-ml-libraries) 
+browsers.<sup>[3](#myfootnote3)</sup> See [here](https://github.com/AngeloKai/js-ml-libraries) 
 for a short list of the libraries or frameworks. [Synaptic.js](http://caza.la/synaptic/#/) and 
 [webdnn](https://mil-tokyo.github.io/webdnn/) are examples of the impressive 
 works developers have done to enable this scenario. 
@@ -50,7 +51,7 @@ However, though the libraries and frameworks have helped lower the barrier of de
 developers continue facing a 
 [painful development process along with bottlenecks](#developer-pain) 
 because of limitations with the current platform. Developers would run into issues such as 
-porting model from C to JS, large model size, performance<sup>[6](#myfootnote6)</sup>, 
+porting model from C to JS, large model size, performance<sup>[4](#myfootnote4)</sup>, 
 memory overflow etc. 
 
 Four existing standard efforts helped address the pain, but none of them 
@@ -217,7 +218,7 @@ databases like [ImageNet](http://www.image-net.org/).
 
 Developers face significant pain when trying a machine learning models into their front-end 
 codebase today. The below walks through a typical development 
-process<sup>[3](#myfootnote3)</sup> and illustrates specific pain points: 
+process<sup>[5](#myfootnote5)</sup> and illustrates specific pain points: 
 
 1. Assuming the developer already has a trained model, the developers first face the pain 
     of large model size. Most models trained with frameworks 
@@ -233,10 +234,10 @@ process<sup>[3](#myfootnote3)</sup> and illustrates specific pain points:
     language choice. The most well-known machine learning frameworks today don't have the option 
     of training models in JavaScript. The typical option is writing the model in python, 
     which the frameworks can compile down to executable and 
-    sometimes C.<sup>[4](#myfootnote4)</sup> Developers can either transpile the model to JS or 
+    sometimes C.<sup>[6](#myfootnote6)</sup> Developers can either transpile the model to JS or 
     re-compile it to work with WebAssembly. The former option means increased file size 
     but easier way to improve performance. Developers can easily re-write the model to be 
-    multi-threaded, a feature not yet available in WebAssembly.<sup>[5](#myfootnote5)</sup> 
+    multi-threaded, a feature not yet available in WebAssembly.<sup>[7](#myfootnote7)</sup> 
     Developers can also more easily accelerate the models with GPU level acceleration 
     with existing libraries of wrapper functions of WebGL. The latter would mean consistent
     file size but much harder route to improving performance, though there is a silver lining. 
@@ -463,19 +464,41 @@ describes a variety of algorithms applicable to sparse representations of matrix
 <br>
 <br>
 <br>
-<a name="myfootnote1">1</a>: In the below paragraphs, models are used to describe all machine 
+<br>
+<br>
+<br>
+<a name="myfootnote1">1</a>: A application with its core functionality provided by a machine 
+learning model. 
+
+<br>
+
+<a name="myfootnote2">2</a>: In the below paragraphs, models are used to describe all machine 
 learning programs while networks are only used for artificial neural networks. 
 
-<a name="myfootnote2">2</a>: Personally I am very impressed by the rate of growth in related 
-quality libraries are produced etc. 
-libraries. I started researching this topic in Aug and could only find a handful of qualities 
-libraries. But when I re-visited the topic in Dec, I've found many more great frameworks.
+<br>
 
-<a name="myfootnote3">3</a>: Admittedly the process is an overgeneralization because 
+<a name="myfootnote3">3</a>: Personally I am very impressed by the surge of growth of 
+related libraries. 
+libraries. I started researching this topic in Aug and could only find a handful of high quality
+libraries. But when I re-visited the topic in Dec, I've found many more great frameworks. More
+than that, developer conferences this year are filled with annoucement in this area, such as the 
+Android Neural Network API which was still in speculation in Aug or the MPS Graph API. 
+
+<br>
+
+<a name="myfootnote4">4</a>: In machine learning research, performance can sometimes refer to 
+    the accuracy of the models at achieving human-comparable result. In the context of 
+    this explainer, performance strictly refers to processing speed. 
+
+<br>
+
+<a name="myfootnote5">5</a>: Admittedly the process is an overgeneralization because 
 different developers will likely develop differently. For example, some developer may start
 with a neural network already written in JS and try to optimize it for other things. 
 
-<a name="myfootnote4">4</a>: Many factors contribute to this phenomenon. Here are the few main 
+<br>
+
+<a name="myfootnote6">6</a>: Many factors contribute to this phenomenon. Here are the few main 
 factors: 
 1. During the training process, the main focus is on rapid iteration of the model and ease of 
     expressing the model. Compared to other major languages, python is easiest at expressing
@@ -495,11 +518,10 @@ factors:
 5. Because of this trend of industry, there is a much larger community of developers working on
     machine learning in python. Developers get much more support using the default option. 
 
-<a name="myfootnote5">5</a>: The module loaded in the WebAssembly VM cannot instantiate a new
+<br>
+
+<a name="myfootnote7">7</a>: The module loaded in the WebAssembly VM cannot instantiate a new
     thread yet. But developers can create multiple 
     [Web Workers](https://html.spec.whatwg.org/multipage/workers.html#workers) and 
     load individual module inside it to run in multi-thread fashion. 
 
-<a name="myfootnote6">6</a>: In machine learning research, performance can sometimes refer to 
-    the accuracy of the models at achieving human-comparable result. In the context of 
-    this explainer, performance strictly refers to processing speed. 
