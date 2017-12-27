@@ -479,10 +479,14 @@ learning programs while networks are only used for artificial neural networks.
 
 <a name="myfootnote3">3</a>: Personally I am very impressed by the surge of growth of 
 related libraries. 
-libraries. I started researching this topic in Aug and could only find a handful of high quality
+I started researching this topic in Aug and could only find a handful of high quality
 libraries. But when I re-visited the topic in Dec, I've found many more great frameworks. More
 than that, developer conferences this year are filled with annoucement in this area, such as the 
-Android Neural Network API which was still in speculation in Aug or the MPS Graph API. 
+Android Neural Network API which was still in speculation in Aug or the MPS Graph API which is
+the evolution of the original BNNS API. What is encouraging to me is that people seem to 
+shift from thinking that we should provide a strictly defined framework and a few basic models 
+to developers to the idea that 
+we should provide basic building blocks to developers and see what they will come up with. 
 
 <br>
 
