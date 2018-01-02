@@ -121,16 +121,20 @@ is a complete solution:
     inferencing with appropriate hardware accelerations. 
 
 Looking at the four existing efforts and how web platforms supported similar issues such as the
-existing WebAssembly + WebGL approach, the best approach forward appeared to be 
-WebAssembly + an API of optimized mathematical functions (tentatively called
-WebML). Some may argue that this approach would still leave us with the issue of large model 
+existing WebAssembly + WebGL approach, the best approach forward appeared to be a combination of :
+1. WebAssembly
+1. A New API of optimized mathematical functions (tentatively called
+WebML). 
+
+Some may argue that this approach would still leave us with the issue of large model 
 size because of large frameworks and we could reduce it down further by developing an API with a 
 higher level of abstraction that models typical neural networks. After all, 
 neural networks have been the 
 forefront of machine learning innovations for the last few years. This "neural network" API could 
 have existing structure for developers to load weights in and an easy way for nodes of the network
 to communicate, such as 
-[SharedBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer).
+[SharedBuffer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer). 
+There are already attempts at standardizing AI models, such as [onxx](https://github.com/onnx/onnx). 
 
 This approach would roughly match [how native platforms supported them](#native-platform-support): 
 * support traditional ML algorithms such as decision tree learning or Bayesian algorithms 
