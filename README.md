@@ -394,7 +394,7 @@ Other than platform API support, development frameworks can also build their exe
 with hardware accelerations. The frameworks have helped the developer ecosystem to grow, 
 especially because *training* is so critical in ML development. Examples include: 
 * Google's [TensorFlow Lite and Mobile](https://www.tensorflow.org/mobile/)
-* Microsoft's [CNTK support for UWP](https://docs.microsoft.com/en-us/cognitive-toolkit/CNTK-Library-Evaluation-on-UWP)
+* Microsoft's [Windows ML for UWP](https://docs.microsoft.com/en-us/windows/uwp/machine-learning/) and [CNTK support for UWP](https://docs.microsoft.com/en-us/cognitive-toolkit/CNTK-Library-Evaluation-on-UWP)
 * Apple's [CoreML Framework](https://developer.apple.com/documentation/coreml)
 * Facebook's [Caffe2go](https://code.facebook.com/posts/196146247499076/delivering-real-time-ai-in-the-palm-of-your-hand/) and [PyTorch](http://pytorch.org/)
 
